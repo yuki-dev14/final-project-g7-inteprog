@@ -598,7 +598,3 @@ int main() {
     }
     return 0;
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> f1bc77bf8c5b9d00127ee18fb78944949a27c21b
