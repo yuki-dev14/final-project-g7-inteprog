@@ -1,0 +1,26 @@
+[Mon May 19 21:04:02 2025] Login failed: Login failed: Invalid credentials.
+[Mon May 19 21:04:16 2025] Admin logged in
+[Mon May 19 21:08:13 2025] Student S001 logged in
+[Mon May 19 21:08:27 2025] S001 logged out
+[Mon May 19 21:09:36 2025] Admin logged in
+[Mon May 19 21:09:56 2025] admin logged out
+[Mon May 19 21:18:31 2025] Admin logged in
+[Mon May 19 21:19:26 2025] Admin logged in
+[Mon May 19 21:28:22 2025] Admin logged in
+[Mon May 19 21:29:08 2025] Admin logged in
+[Mon May 19 21:29:53 2025] Admin added course Infoman
+[Mon May 19 21:30:06 2025] admin logged out
+[Mon May 19 21:30:35 2025] Login failed: Login failed: Invalid credentials.
+[Mon May 19 21:31:12 2025] Login failed: Login failed: Invalid credentials.
+[Mon May 19 21:31:25 2025] Admin logged in
+[Mon May 19 21:32:02 2025] Admin added student 811881
+[Mon May 19 21:32:23 2025] admin logged out
+[Mon May 19 21:32:34 2025] Login failed: Login failed: Invalid credentials.
+[Mon May 19 21:32:55 2025] Admin logged in
+[Mon May 19 21:33:27 2025] Admin added student qwe123
+[Mon May 19 21:33:32 2025] admin logged out
+[Mon May 19 21:33:46 2025] Student qwe123 logged in
+[Mon May 19 21:35:04 2025] Student qwe123 logged in
+[Mon May 19 21:35:27 2025] Student qwe123 enrolled in Infoman
+[Mon May 19 21:36:24 2025] Student qwe123 edited profile
+[Mon May 19 21:36:44 2025] qwe123 logged out
