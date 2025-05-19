@@ -40,6 +40,86 @@ string trim(const string& s) {
     return (start == string::npos) ? "" : s.substr(start, end - start + 1);
 }
 
+// --- Display Strategy Pattern ---
+class DisplayStrategy {
+public:
+    virtual void displayStudents() = 0;
+    virtual void displayCourses() = 0;
+    virtual ~DisplayStrategy() {}
+};
+
+class TableView : public DisplayStrategy {
+public:
+    void displayStudents() override {
+        ifstream fin("students.txt");
+        string line;
+        cout << "\nID\tName\tEmail\tAge\tProgram\n";
+        while (getline(fin, line)) {
+            istringstream iss(line);
+            string id, name, email, age, program, pwd;
+            getline(iss, id, ','); getline(iss, name, ','); getline(iss, email, ',');
+            getline(iss, age, ','); getline(iss, program, ','); getline(iss, pwd, ',');
+            cout << id << "\t" << name << "\t" << email << "\t" << age << "\t" << program << endl;
+        }
+    }
+    void displayCourses() override {
+        ifstream fin("courses.txt");
+        string line;
+        cout << "\nCode\tName\tUnits\n";
+        while (getline(fin, line)) {
+            istringstream iss(line);
+            string code, name, units;
+            getline(iss, code, ','); getline(iss, name, ','); getline(iss, units, ',');
+            cout << code << "\t" << name << "\t" << units << endl;
+        }
+    }
+};
+
+class SummaryView : public DisplayStrategy {
+public:
+    void displayStudents() override {
+        ifstream fin("students.txt");
+        string line;
+        cout << "\nStudent IDs and Names:\n";
+        while (getline(fin, line)) {
+            istringstream iss(line);
+            string id, name;
+            getline(iss, id, ','); getline(iss, name, ',');
+            cout << id << " - " << name << endl;
+        }
+    }
+    void displayCourses() override {
+        ifstream fin("courses.txt");
+        string line;
+        cout << "\nCourse Codes and Names:\n";
+        while (getline(fin, line)) {
+            istringstream iss(line);
+            string code, name;
+            getline(iss, code, ','); getline(iss, name, ',');
+            cout << code << " - " << name << endl;
+        }
+    }
+};
+
+// Global pointer for current strategy
+DisplayStrategy* displayStrategy = nullptr;
+
+// Let user choose display mode
+void chooseDisplayStrategy() {
+    cout << "\nChoose display format:\n";
+    cout << "1. Table View\n";
+    cout << "2. Summary View\n";
+    cout << "Select option: ";
+    int opt;
+    cin >> opt;
+    cin.ignore();
+    if (displayStrategy) delete displayStrategy;
+    if (opt == 2)
+        displayStrategy = new SummaryView();
+    else
+        displayStrategy = new TableView();
+}
+
 // User base class
 class User {
 protected:
@@ -70,7 +150,8 @@ public:
         cout << "7. Edit Course\n";
         cout << "8. Delete Student\n";
         cout << "9. Delete Course\n";
-        cout << "10. Logout\n";
+        cout << "10. Change Display Mode\n";
+        cout << "11. Logout\n";
     }
     bool handleOption(int opt) override;
 };
@@ -155,27 +236,12 @@ void addCourse() {
     cout << "Course added.\n";
 }
 void viewAllStudents() {
-    ifstream fin("students.txt");
-    string line;
-    cout << "\nID\tName\tEmail\tAge\tProgram\n";
-    while (getline(fin, line)) {
-        istringstream iss(line);
-        string id, name, email, age, program, pwd;
-        getline(iss, id, ','); getline(iss, name, ','); getline(iss, email, ',');
-        getline(iss, age, ','); getline(iss, program, ','); getline(iss, pwd, ',');
-        cout << id << "\t" << name << "\t" << email << "\t" << age << "\t" << program << endl;
-    }
+    if (!displayStrategy) chooseDisplayStrategy();
+    displayStrategy->displayStudents();
 }
 void viewAllCourses() {
-    ifstream fin("courses.txt");
-    string line;
-    cout << "\nCode\tName\tUnits\n";
-    while (getline(fin, line)) {
-        istringstream iss(line);
-        string code, name, units;
-        getline(iss, code, ','); getline(iss, name, ','); getline(iss, units, ',');
-        cout << code << "\t" << name << "\t" << units << endl;
-    }
+    if (!displayStrategy) chooseDisplayStrategy();
+    displayStrategy->displayCourses();
 }
 void viewStudentsPerCourse() {
     cout << "Enter Course Code: ";
@@ -187,7 +253,7 @@ void viewStudentsPerCourse() {
     while (getline(fin, line)) {
         istringstream iss(line);
         string sid, ccode;
-        getline(iss, sid, ','); getline(iss, ccode, ',');
+        getline(iss, sid, ','); getline(iss, code, ',');
         if (trim(ccode) == code) {
             // Get student name
             ifstream sfin("students.txt");
@@ -463,7 +529,8 @@ bool Admin::handleOption(int opt) {
         case 7: editCourse(); break;
         case 8: deleteStudent(); break;
         case 9: deleteCourse(); break;
-        case 10: Logger::getInstance()->log(getId() + " logged out"); return false;
+        case 10: chooseDisplayStrategy(); break;
+        case 11: Logger::getInstance()->log(getId() + " logged out"); return false;
         default: cout << "Invalid option.\n";
     }
     return true;

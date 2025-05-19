@@ -24,3 +24,7 @@
 [Mon May 19 21:35:27 2025] Student qwe123 enrolled in Infoman
 [Mon May 19 21:36:24 2025] Student qwe123 edited profile
 [Mon May 19 21:36:44 2025] qwe123 logged out
+[Mon May 19 22:12:25 2025] Admin logged in
+[Mon May 19 22:29:58 2025] Login failed: Login failed: Invalid credentials.
+[Mon May 19 22:30:04 2025] Admin logged in
+[Mon May 19 22:30:43 2025] Admin logged in
