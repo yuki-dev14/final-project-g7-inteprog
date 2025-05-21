@@ -1,2 +1,1 @@
 Inteprog,Intro to Prog,2
-Infoman,Information Management,1

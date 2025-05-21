@@ -5,6 +5,7 @@
 #include <memory>
 #include <sstream>
 #include <stdexcept>
+#include <iomanip>
 
 using namespace std;
 
@@ -53,24 +54,40 @@ public:
     void displayStudents() override {
         ifstream fin("students.txt");
         string line;
-        cout << "\nID\tName\tEmail\tAge\tProgram\n";
+        cout << "\n"
+             << left << setw(12) << "ID"
+             << left << setw(22) << "Name"
+             << left << setw(28) << "Email"
+             << left << setw(6) << "Age"
+             << left << setw(16) << "Program" << endl;
+        cout << string(84, '-') << endl;
         while (getline(fin, line)) {
             istringstream iss(line);
             string id, name, email, age, program, pwd;
             getline(iss, id, ','); getline(iss, name, ','); getline(iss, email, ',');
             getline(iss, age, ','); getline(iss, program, ','); getline(iss, pwd, ',');
-            cout << id << "\t" << name << "\t" << email << "\t" << age << "\t" << program << endl;
+            cout << left << setw(12) << id
+                 << left << setw(22) << name
+                 << left << setw(28) << email
+                 << left << setw(6) << age
+                 << left << setw(16) << program << endl;
         }
     }
     void displayCourses() override {
         ifstream fin("courses.txt");
         string line;
-        cout << "\nCode\tName\tUnits\n";
+        cout << "\n"
+             << left << setw(12) << "Code"
+             << left << setw(32) << "Name"
+             << left << setw(8) << "Units" << endl;
+        cout << string(52, '-') << endl;
         while (getline(fin, line)) {
             istringstream iss(line);
             string code, name, units;
             getline(iss, code, ','); getline(iss, name, ','); getline(iss, units, ',');
-            cout << code << "\t" << name << "\t" << units << endl;
+            cout << left << setw(12) << code
+                 << left << setw(32) << name
+                 << left << setw(8) << units << endl;
         }
     }
 };
@@ -106,18 +123,30 @@ DisplayStrategy* displayStrategy = nullptr;
 
 // Let user choose display mode
 void chooseDisplayStrategy() {
-    cout << "\nChoose display format:\n";
-    cout << "1. Table View\n";
-    cout << "2. Summary View\n";
-    cout << "Select option: ";
-    int opt;
-    cin >> opt;
-    cin.ignore();
-    if (displayStrategy) delete displayStrategy;
-    if (opt == 2)
-        displayStrategy = new SummaryView();
-    else
-        displayStrategy = new TableView();
+    int opt = 0;
+    do {
+        cout << "\nChoose display format:\n";
+        cout << "1. Table View\n";
+        cout << "2. Summary View\n";
+        cout << "Select option: ";
+        string input;
+        getline(cin, input);
+
+        // Validation: must be exactly "1" or "2"
+        if (input == "1" || input == "2") {
+            opt = stoi(input);
+        } else {
+            cout << "Invalid input. Please enter 1 or 2 only.\n";
+            continue;
+        }
+
+        if (displayStrategy) delete displayStrategy;
+        if (opt == 2)
+            displayStrategy = new SummaryView();
+        else
+            displayStrategy = new TableView();
+        break;
+    } while (true);
 }
 
 // User base class
@@ -377,36 +406,60 @@ void viewAllCourses() {
     displayStrategy->displayCourses();
 }
 void viewStudentsPerCourse() {
-    cout << "Enter Course Code: ";
-    string code; getline(cin, code);
-    if (!courseExists(code)) { cout << "Course not found.\n"; return; }
-    cout << "Students enrolled in " << code << ":\n";
+    string inputCode;
+    bool valid = false;
+    do {
+        cout << "Enter Course Code: ";
+        getline(cin, inputCode);
+
+        if (!courseExistsCI(inputCode)) {
+            cout << "Course not found. Please try again.\n";
+        } else {
+            valid = true;
+        }
+    } while (!valid);
+
+    cout << "Students enrolled in " << inputCode << ":\n";
     ifstream fin("enrollments.txt");
     string line;
+    bool found = false;
     while (getline(fin, line)) {
         istringstream iss(line);
         string sid, ccode;
-        getline(iss, sid, ','); getline(iss, code, ',');
-        if (trim(ccode) == code) {
+        getline(iss, sid, ',');
+        getline(iss, ccode, ',');
+        if (equalsIgnoreCase(trim(ccode), trim(inputCode))) {
             // Get student name
             ifstream sfin("students.txt");
             string sline;
             while (getline(sfin, sline)) {
                 istringstream siss(sline);
                 string id, name;
-                getline(siss, id, ','); getline(siss, name, ',');
+                getline(siss, id, ',');
+                getline(siss, name, ',');
                 if (trim(id) == trim(sid)) {
                     cout << id << " - " << name << endl;
+                    found = true;
                     break;
                 }
             }
         }
     }
+    if (!found) cout << "No students enrolled in this course.\n";
 }
 void editStudent() {
-    cout << "Enter Student ID to edit: ";
-    string id; getline(cin, id);
-    if (!studentExists(id)) { cout << "Student not found.\n"; return; }
+    string id;
+    bool found = false;
+    do {
+        cout << "Enter Student ID to edit: ";
+        getline(cin, id);
+        if (!studentExistsCI(id)) {
+            cout << "Student not found (not case sensitive). Please try again.\n";
+        } else {
+            found = true;
+        }
+    } while (!found);
+
     ifstream fin("students.txt");
     ofstream fout("students_tmp.txt");
     string line;
@@ -416,11 +469,42 @@ void editStudent() {
         string sid, name, email, age, program, pwd;
         getline(iss, sid, ','); getline(iss, name, ','); getline(iss, email, ',');
         getline(iss, age, ','); getline(iss, program, ','); getline(iss, pwd, ',');
-        if (trim(sid) == id) {
-            cout << "Edit Name (" << name << "): "; string n; getline(cin, n); if (!n.empty()) name = n;
-            cout << "Edit Email (" << email << "): "; string e; getline(cin, e); if (!e.empty()) email = e;
-            cout << "Edit Age (" << age << "): "; string a; getline(cin, a); if (!a.empty()) age = a;
-            cout << "Edit Program (" << program << "): "; string p; getline(cin, p); if (!p.empty()) program = p;
+        if (equalsIgnoreCase(trim(sid), trim(id))) {
+            string n, e, a, p;
+            // Name validation
+            do {
+                cout << "Edit Name (" << name << "): ";
+                getline(cin, n);
+                if (n.empty()) break;
+                if (!isLettersOnly(n)) {
+                    cout << "Name should be letters only.\n";
+                } else {
+                    name = n;
+                    break;
+                }
+            } while (true);
+
+            cout << "Edit Email (" << email << "): ";
+            getline(cin, e);
+            if (!e.empty()) email = e;
+
+            // Age validation
+            do {
+                cout << "Edit Age (" << age << "): ";
+                getline(cin, a);
+                if (a.empty()) break;
+                if (!isWholeNumber(a)) {
+                    cout << "Age should be a whole number.\n";
+                } else {
+                    age = a;
+                    break;
+                }
+            } while (true);
+
+            cout << "Edit Program (" << program << "): ";
+            getline(cin, p);
+            if (!p.empty()) program = p;
+
             fout << sid << "," << name << "," << email << "," << age << "," << program << "," << pwd << endl;
             edited = true;
         } else {
@@ -435,9 +519,18 @@ void editStudent() {
     }
 }
 void editCourse() {
-    cout << "Enter Course Code to edit: ";
-    string code; getline(cin, code);
-    if (!courseExists(code)) { cout << "Course not found.\n"; return; }
+    string code;
+    bool found = false;
+    do {
+        cout << "Enter Course Code to edit: ";
+        getline(cin, code);
+        if (!courseExistsCI(code)) {
+            cout << "Course not found (not case sensitive). Please try again.\n";
+        } else {
+            found = true;
+        }
+    } while (!found);
+
     ifstream fin("courses.txt");
     ofstream fout("courses_tmp.txt");
     string line;
@@ -446,9 +539,25 @@ void editCourse() {
         istringstream iss(line);
         string ccode, name, units;
         getline(iss, ccode, ','); getline(iss, name, ','); getline(iss, units, ',');
-        if (trim(ccode) == code) {
-            cout << "Edit Name (" << name << "): "; string n; getline(cin, n); if (!n.empty()) name = n;
-            cout << "Edit Units (" << units << "): "; string u; getline(cin, u); if (!u.empty()) units = u;
+        if (equalsIgnoreCase(trim(ccode), trim(code))) {
+            string n, u;
+            cout << "Edit Name (" << name << "): ";
+            getline(cin, n);
+            if (!n.empty()) name = n;
+
+            // Units validation
+            do {
+                cout << "Edit Units (" << units << "): ";
+                getline(cin, u);
+                if (u.empty()) break;
+                if (!isWholeNumber(u)) {
+                    cout << "Units should be a whole number.\n";
+                } else {
+                    units = u;
+                    break;
+                }
+            } while (true);
+
             fout << ccode << "," << name << "," << units << endl;
             edited = true;
         } else {
@@ -463,9 +572,18 @@ void editCourse() {
     }
 }
 void deleteStudent() {
-    cout << "Enter Student ID to delete: ";
-    string id; getline(cin, id);
-    if (!studentExists(id)) { cout << "Student not found.\n"; return; }
+    string id;
+    bool found = false;
+    do {
+        cout << "Enter Student ID to delete: ";
+        getline(cin, id);
+        if (!studentExistsCI(id)) {
+            cout << "Student not found (not case sensitive). Please try again.\n";
+        } else {
+            found = true;
+        }
+    } while (!found);
+
     ifstream fin("students.txt");
     ofstream fout("students_tmp.txt");
     string line;
@@ -474,7 +592,7 @@ void deleteStudent() {
         istringstream iss(line);
         string sid;
         getline(iss, sid, ',');
-        if (trim(sid) == id) {
+        if (equalsIgnoreCase(trim(sid), trim(id))) {
             deleted = true;
         } else {
             fout << line << endl;
@@ -489,7 +607,7 @@ void deleteStudent() {
         istringstream iss(line);
         string sid, ccode;
         getline(iss, sid, ','); getline(iss, ccode, ',');
-        if (trim(sid) != id) eout << sid << "," << ccode << endl;
+        if (!equalsIgnoreCase(trim(sid), trim(id))) eout << sid << "," << ccode << endl;
     }
     ein.close(); eout.close();
     remove("enrollments.txt"); rename("enrollments_tmp.txt", "enrollments.txt");
@@ -499,9 +617,18 @@ void deleteStudent() {
     }
 }
 void deleteCourse() {
-    cout << "Enter Course Code to delete: ";
-    string code; getline(cin, code);
-    if (!courseExists(code)) { cout << "Course not found.\n"; return; }
+    string code;
+    bool found = false;
+    do {
+        cout << "Enter Course Code to delete: ";
+        getline(cin, code);
+        if (!courseExistsCI(code)) {
+            cout << "Course not found (not case sensitive). Please try again.\n";
+        } else {
+            found = true;
+        }
+    } while (!found);
+
     ifstream fin("courses.txt");
     ofstream fout("courses_tmp.txt");
     string line;
@@ -510,7 +637,7 @@ void deleteCourse() {
         istringstream iss(line);
         string ccode;
         getline(iss, ccode, ',');
-        if (trim(ccode) == code) {
+        if (equalsIgnoreCase(trim(ccode), trim(code))) {
             deleted = true;
         } else {
             fout << line << endl;
@@ -525,7 +652,7 @@ void deleteCourse() {
         istringstream iss(line);
         string sid, ccode;
         getline(iss, sid, ','); getline(iss, ccode, ',');
-        if (trim(ccode) != code) eout << sid << "," << ccode << endl;
+        if (!equalsIgnoreCase(trim(ccode), trim(code))) eout << sid << "," << ccode << endl;
     }
     ein.close(); eout.close();
     remove("enrollments.txt"); rename("enrollments_tmp.txt", "enrollments.txt");
