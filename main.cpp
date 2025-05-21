@@ -209,16 +209,122 @@ bool isEnrolled(const string& sid, const string& ccode) {
     return false;
 }
 
+// --- Helpers for validation and case-insensitive checks ---
+bool isAlphanumeric(const string& s) {
+    if (s.empty()) return false;
+    for (size_t i = 0; i < s.size(); ++i) {
+        char c = s[i];
+        if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')))
+            return false;
+    }
+    return true;
+}
+bool isLettersOnly(const string& s) {
+    if (s.empty()) return false;
+    for (size_t i = 0; i < s.size(); ++i) {
+        char c = s[i];
+        if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == ' '))
+            return false;
+    }
+    return true;
+}
+bool isWholeNumber(const string& s) {
+    if (s.empty()) return false;
+    for (size_t i = 0; i < s.size(); ++i) {
+        if (!(s[i] >= '0' && s[i] <= '9')) return false;
+    }
+    return true;
+}
+bool equalsIgnoreCase(const string& a, const string& b) {
+    if (a.size() != b.size()) return false;
+    for (size_t i = 0; i < a.size(); ++i) {
+        char ca = a[i], cb = b[i];
+        if (ca >= 'A' && ca <= 'Z') ca += 32;
+        if (cb >= 'A' && cb <= 'Z') cb += 32;
+        if (ca != cb) return false;
+    }
+    return true;
+}
+bool studentExistsCI(const string& id) {
+    ifstream fin("students.txt");
+    string line;
+    while (getline(fin, line)) {
+        istringstream iss(line);
+        string sid;
+        getline(iss, sid, ',');
+        if (equalsIgnoreCase(trim(sid), trim(id))) return true;
+    }
+    return false;
+}
+bool courseExistsCI(const string& code) {
+    ifstream fin("courses.txt");
+    string line;
+    while (getline(fin, line)) {
+        istringstream iss(line);
+        string ccode;
+        getline(iss, ccode, ',');
+        if (equalsIgnoreCase(trim(ccode), trim(code))) return true;
+    }
+    return false;
+}
+
 // --- Admin Features ---
 void addStudent() {
     string id, name, email, age, program, password;
-    cout << "Enter Student ID: "; getline(cin, id);
-    if (studentExists(id)) { cout << "Student ID already exists.\n"; return; }
-    cout << "Enter Name: "; getline(cin, name);
-    cout << "Enter Email: "; getline(cin, email);
-    cout << "Enter Age: "; getline(cin, age);
-    cout << "Enter Program: "; getline(cin, program);
-    cout << "Enter Password: "; getline(cin, password);
+
+    // Student ID input and validation
+    bool validId = false;
+    do {
+        cout << "Enter Student ID: ";
+        getline(cin, id);
+
+        // Check for spaces in the input
+        if (id.find(' ') != string::npos) {
+            cout << "Student ID must not contain spaces.\n";
+            continue;
+        }
+
+        if (!isAlphanumeric(id)) {
+            cout << "Student ID must be strictly alphanumeric.\n";
+        } else if (studentExistsCI(id)) {
+            cout << "Student ID already exists.\n";
+        } else {
+            validId = true;
+        }
+    } while (!validId);
+
+    // Name input and validation
+    bool validName = false;
+    do {
+        cout << "Enter Name: ";
+        getline(cin, name);
+        if (!isLettersOnly(name)) {
+            cout << "Name should be letters only.\n";
+        } else {
+            validName = true;
+        }
+    } while (!validName);
+
+    cout << "Enter Email: ";
+    getline(cin, email);
+
+    // Age input and validation
+    bool validAge = false;
+    do {
+        cout << "Enter Age: ";
+        getline(cin, age);
+        if (!isWholeNumber(age)) {
+            cout << "Age should be a whole number.\n";
+        } else {
+            validAge = true;
+        }
+    } while (!validAge);
+
+    cout << "Enter Program: ";
+    getline(cin, program);
+    cout << "Enter Password: ";
+    getline(cin, password);
+
     ofstream fout("students.txt", ios::app);
     fout << id << "," << name << "," << email << "," << age << "," << program << "," << password << endl;
     Logger::getInstance()->log("Admin added student " + id);
@@ -550,32 +656,39 @@ bool Student::handleOption(int opt) {
 
 // --- Login ---
 unique_ptr<User> login() {
-    string username, password;
-    cout << "Username (admin or student ID): ";
-    getline(cin, username);
-    cout << "Password: ";
-    getline(cin, password);
+    bool loggedIn = false;
+    unique_ptr<User> user;
+    do {
+        string username, password;
+        cout << "Username (admin or student ID): ";
+        getline(cin, username);
+        cout << "Password: ";
+        getline(cin, password);
 
-    // Admin credentials (hardcoded for demo)
-    if (username == "admin" && password == "admin123") {
-        Logger::getInstance()->log("Admin logged in");
-        return unique_ptr<Admin>(new Admin("admin", "Administrator", "admin@school.edu", "admin123"));
-    }
-
-    // Student credentials (from file)
-    ifstream fin("students.txt");
-    string line;
-    while (getline(fin, line)) {
-        istringstream iss(line);
-        string id, name, email, age, program, pwd;
-        getline(iss, id, ','); getline(iss, name, ','); getline(iss, email, ',');
-        getline(iss, age, ','); getline(iss, program, ','); getline(iss, pwd, ',');
-        if (trim(id) == username && trim(pwd) == password) {
-            Logger::getInstance()->log("Student " + id + " logged in");
-            return unique_ptr<Student>(new Student(id, name, email, pwd));
+        // Admin credentials
+        if (username == "admin" && password == "admin123") {
+            Logger::getInstance()->log("Admin logged in");
+            user.reset(new Admin("admin", "Administrator", "admin@school.edu", "admin123"));
+            loggedIn = true;
+        } else {
+            ifstream fin("students.txt");
+            string line;
+            while (getline(fin, line)) {
+                istringstream iss(line);
+                string id, name, email, age, program, pwd;
+                getline(iss, id, ','); getline(iss, name, ','); getline(iss, email, ',');
+                getline(iss, age, ','); getline(iss, program, ','); getline(iss, pwd, ',');
+                if (equalsIgnoreCase(trim(id), trim(username)) && trim(pwd) == password) {
+                    Logger::getInstance()->log("Student " + id + " logged in");
+                    user.reset(new Student(id, name, email, pwd));
+                    loggedIn = true;
+                    break;
+                }
+            }
         }
-    }
-    throw runtime_error("Login failed: Invalid credentials.");
+        if (!loggedIn) cout << "Login failed: Invalid credentials. Try again.\n";
+    } while (!loggedIn);
+    return user;
 }
 
 // --- Main ---
@@ -587,9 +700,16 @@ int main() {
         while (running) {
             user->menu();
             cout << "Select option: ";
-            int opt;
-            cin >> opt;
-            cin.ignore();
+            string optstr;
+            getline(cin, optstr);
+            int opt = 0;
+            bool valid = true;
+            if (optstr.empty()) valid = false;
+            for (size_t i = 0; i < optstr.size(); ++i) {
+                if (!(optstr[i] >= '0' && optstr[i] <= '9')) valid = false;
+            }
+            if (valid) opt = atoi(optstr.c_str());
+            else opt = 0;
             running = user->handleOption(opt);
         }
     } catch (const exception& ex) {

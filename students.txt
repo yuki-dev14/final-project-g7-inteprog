@@ -1,2 +1,3 @@
 
 abc123,Lem Garcia,lemgarcia@gmail.com,22,BS IT,Lemg_123
+def456,Euclid Yabut,yuki@gmail.com,20,BS IT,yuki123
