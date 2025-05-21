@@ -1,2 +1,1 @@
-qwe123,Infoman
-qwe123,itprog2nd
+abc123,inteprog
