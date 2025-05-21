@@ -9,6 +9,7 @@
 
 using namespace std;
 
+
 // Logger Singleton
 class Logger {
 private:
