@@ -930,7 +930,6 @@ unique_ptr<User> login() {
     return user;
 }
 
-// --- Main ---
 int main() {
     try {
         cout << "=== Student Management System ===\n";
