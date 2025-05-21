@@ -1,1 +1,2 @@
-qwe123,Yabut,yabut@dlsl.edu.h,21,bsit,password
+
+abc123,Lem Garcia,lemgarcia@gmail.com,22,BS IT,Lemg_123

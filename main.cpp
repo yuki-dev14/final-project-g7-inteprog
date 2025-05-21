@@ -559,7 +559,7 @@ unique_ptr<User> login() {
     // Admin credentials (hardcoded for demo)
     if (username == "admin" && password == "admin123") {
         Logger::getInstance()->log("Admin logged in");
-        return make_unique<Admin>("admin", "Administrator", "admin@school.edu", "admin123");
+        return unique_ptr<Admin>(new Admin("admin", "Administrator", "admin@school.edu", "admin123"));
     }
 
     // Student credentials (from file)
@@ -572,7 +572,7 @@ unique_ptr<User> login() {
         getline(iss, age, ','); getline(iss, program, ','); getline(iss, pwd, ',');
         if (trim(id) == username && trim(pwd) == password) {
             Logger::getInstance()->log("Student " + id + " logged in");
-            return make_unique<Student>(id, name, email, pwd);
+            return unique_ptr<Student>(new Student(id, name, email, pwd));
         }
     }
     throw runtime_error("Login failed: Invalid credentials.");
