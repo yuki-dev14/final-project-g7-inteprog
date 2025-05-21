@@ -1,2 +1,3 @@
-Infoman,Information management,3
-itprog2nd,prog,0
+Inteprog,Intro to Prog,2
+Infoman,Information Management,3
+Itproma,Introduction to Project Management,3
