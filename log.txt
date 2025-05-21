@@ -28,3 +28,19 @@
 [Mon May 19 22:29:58 2025] Login failed: Login failed: Invalid credentials.
 [Mon May 19 22:30:04 2025] Admin logged in
 [Mon May 19 22:30:43 2025] Admin logged in
+[Mon May 19 22:44:03 2025] Student qwe123 logged in
+[Mon May 19 22:44:17 2025] Student qwe123 dropped course Infoman
+[Mon May 19 22:44:39 2025] Student qwe123 enrolled in Infoman
+[Wed May 21 22:07:39 2025] Admin logged in
+[Wed May 21 22:08:32 2025] Admin added student 123eu
+[Wed May 21 22:09:38 2025] Admin added course itprog2nd
+[Wed May 21 22:10:26 2025] Admin added student 1111
+[Wed May 21 22:10:54 2025] Admin added student 111
+[Wed May 21 22:12:52 2025] Admin edited student qwe123
+[Wed May 21 22:13:03 2025] Admin deleted student 1111
+[Wed May 21 22:13:13 2025] admin logged out
+[Wed May 21 22:13:56 2025] Student qwe123 logged in
+[Wed May 21 22:14:12 2025] Student qwe123 enrolled in itprog2nd
+[Wed May 21 22:14:48 2025] Student qwe123 edited profile
+[Wed May 21 22:15:13 2025] Student qwe123 edited profile
+[Wed May 21 22:15:58 2025] qwe123 logged out
