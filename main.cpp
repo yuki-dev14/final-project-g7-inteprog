@@ -8,6 +8,8 @@
 
 using namespace std;
 
+//testchange
+//testchange2
 // Logger Singleton
 class Logger {
 private:
