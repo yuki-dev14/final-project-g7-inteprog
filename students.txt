@@ -1,3 +1,4 @@
-qwe123,123,@dskjsdngs,sdfsdf,bwesit,password
-123eu,euclid,123@gmail.com,1,BSIT123,euclid
-111,gwen,salazar,13,bsit,gwen
+abc123,Leemuel Garcia,lemg@gmail.com,20,BS IT,Lemg_123
+DEF456,Euclid Yabut,euclidyabut@gmail.com,20,BS IT,yuki123
+GHI789,Gwy Salazar,gwysalazar@gmail.com,20,BS IT,gwy123
+jas456,Jasmine Bustamante,jasbu@gmail.com,20,BS IT,jas123
