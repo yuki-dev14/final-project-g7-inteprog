@@ -1,46 +1,63 @@
-[Mon May 19 21:04:02 2025] Login failed: Login failed: Invalid credentials.
-[Mon May 19 21:04:16 2025] Admin logged in
-[Mon May 19 21:08:13 2025] Student S001 logged in
-[Mon May 19 21:08:27 2025] S001 logged out
-[Mon May 19 21:09:36 2025] Admin logged in
-[Mon May 19 21:09:56 2025] admin logged out
-[Mon May 19 21:18:31 2025] Admin logged in
-[Mon May 19 21:19:26 2025] Admin logged in
-[Mon May 19 21:28:22 2025] Admin logged in
-[Mon May 19 21:29:08 2025] Admin logged in
-[Mon May 19 21:29:53 2025] Admin added course Infoman
-[Mon May 19 21:30:06 2025] admin logged out
-[Mon May 19 21:30:35 2025] Login failed: Login failed: Invalid credentials.
-[Mon May 19 21:31:12 2025] Login failed: Login failed: Invalid credentials.
-[Mon May 19 21:31:25 2025] Admin logged in
-[Mon May 19 21:32:02 2025] Admin added student 811881
-[Mon May 19 21:32:23 2025] admin logged out
-[Mon May 19 21:32:34 2025] Login failed: Login failed: Invalid credentials.
-[Mon May 19 21:32:55 2025] Admin logged in
-[Mon May 19 21:33:27 2025] Admin added student qwe123
-[Mon May 19 21:33:32 2025] admin logged out
-[Mon May 19 21:33:46 2025] Student qwe123 logged in
-[Mon May 19 21:35:04 2025] Student qwe123 logged in
-[Mon May 19 21:35:27 2025] Student qwe123 enrolled in Infoman
-[Mon May 19 21:36:24 2025] Student qwe123 edited profile
-[Mon May 19 21:36:44 2025] qwe123 logged out
-[Mon May 19 22:12:25 2025] Admin logged in
-[Mon May 19 22:29:58 2025] Login failed: Login failed: Invalid credentials.
-[Mon May 19 22:30:04 2025] Admin logged in
-[Mon May 19 22:30:43 2025] Admin logged in
-[Mon May 19 22:44:03 2025] Student qwe123 logged in
-[Mon May 19 22:44:17 2025] Student qwe123 dropped course Infoman
-[Mon May 19 22:44:39 2025] Student qwe123 enrolled in Infoman
-[Wed May 21 22:07:39 2025] Admin logged in
-[Wed May 21 22:08:32 2025] Admin added student 123eu
-[Wed May 21 22:09:38 2025] Admin added course itprog2nd
-[Wed May 21 22:10:26 2025] Admin added student 1111
-[Wed May 21 22:10:54 2025] Admin added student 111
-[Wed May 21 22:12:52 2025] Admin edited student qwe123
-[Wed May 21 22:13:03 2025] Admin deleted student 1111
-[Wed May 21 22:13:13 2025] admin logged out
-[Wed May 21 22:13:56 2025] Student qwe123 logged in
-[Wed May 21 22:14:12 2025] Student qwe123 enrolled in itprog2nd
-[Wed May 21 22:14:48 2025] Student qwe123 edited profile
-[Wed May 21 22:15:13 2025] Student qwe123 edited profile
-[Wed May 21 22:15:58 2025] qwe123 logged out
+[Wed May 21 20:12:26 2025] Admin added student abc123
+[Wed May 21 20:14:53 2025] Admin added course Inteprog
+[Wed May 21 20:16:57 2025] Admin logged in
+[Wed May 21 20:21:20 2025] Admin edited student abc123
+[Wed May 21 20:22:22 2025] Admin edited course Inteprog
+[Wed May 21 20:23:30 2025] Admin logged in
+[Wed May 21 20:24:20 2025] Admin added student def456
+[Wed May 21 20:24:44 2025] Admin added course Infoman
+[Wed May 21 20:25:39 2025] Admin deleted student def456
+[Wed May 21 20:26:09 2025] Admin deleted course Infoman
+[Wed May 21 20:28:02 2025] admin logged out
+[Wed May 21 20:29:20 2025] Login failed: Login failed: Invalid credentials.
+[Wed May 21 20:30:16 2025] Student abc123 logged in
+[Wed May 21 20:32:44 2025] Student abc123 enrolled in Inteprog
+[Wed May 21 20:33:39 2025] Student abc123 edited profile
+[Wed May 21 20:34:23 2025] Student abc123 dropped course Inteprog
+[Wed May 21 20:34:27 2025] Student abc123 enrolled in Inteprog
+[Wed May 21 20:34:57 2025] abc123 logged out
+[Wed May 21 20:35:06 2025] Admin logged in
+[Wed May 21 20:37:41 2025] admin logged out
+[Wed May 21 21:19:44 2025] Admin logged in
+[Wed May 21 21:22:09 2025] Admin logged in
+[Wed May 21 21:23:31 2025] Admin logged in
+[Wed May 21 21:25:07 2025] Admin logged in
+[Wed May 21 21:26:05 2025] Admin added student def456
+[Wed May 21 21:26:31 2025] Admin logged in
+[Wed May 21 21:28:31 2025] Admin logged in
+[Wed May 21 21:29:12 2025] Admin added course Infoman
+[Wed May 21 21:46:53 2025] Admin logged in
+[Wed May 21 21:47:19 2025] admin logged out
+[Wed May 21 21:47:44 2025] Student abc123 logged in
+[Wed May 21 21:47:56 2025] abc123 logged out
+[Wed May 21 21:49:22 2025] Admin logged in
+[Wed May 21 21:50:39 2025] Admin logged in
+[Wed May 21 21:53:05 2025] Admin logged in
+[Wed May 21 21:54:40 2025] Admin logged in
+[Wed May 21 21:55:24 2025] Admin edited student DEF456
+[Wed May 21 21:55:53 2025] Admin edited course infoman
+[Wed May 21 21:57:57 2025] Admin logged in
+[Wed May 21 21:58:15 2025] Admin deleted student DEF456
+[Wed May 21 21:58:30 2025] Admin deleted course INFOMAN 
+[Wed May 21 22:00:46 2025] Admin logged in
+[Wed May 21 22:01:16 2025] admin logged out
+[Wed May 21 22:08:46 2025] Student abc123 logged in
+[Wed May 21 22:09:46 2025] Student abc123 enrolled in inteprog
+[Wed May 21 22:10:23 2025] Student abc123 enrolled in inteprog 
+[Wed May 21 22:11:43 2025] Student abc123 logged in
+[Wed May 21 22:12:00 2025] Student abc123 enrolled in inteprog 
+[Wed May 21 22:13:39 2025] Student abc123 logged in
+[Wed May 21 22:14:41 2025] Student abc123 logged in
+[Wed May 21 22:15:37 2025] Student abc123 edited profile
+[Wed May 21 22:15:49 2025] Student abc123 dropped course inteprog
+[Wed May 21 22:15:57 2025] Student abc123 enrolled in inteprog
+[Wed May 21 22:16:08 2025] abc123 logged out
+[Wed May 21 22:19:07 2025] Admin logged in
+[Wed May 21 22:20:02 2025] Admin added student DEF456
+[Wed May 21 22:20:40 2025] Admin added student GHI789
+[Wed May 21 22:21:07 2025] Admin added student jas456
+[Wed May 21 22:21:29 2025] Admin added course Infoman
+[Wed May 21 22:21:45 2025] Admin added course Itproma
+[Wed May 21 22:25:26 2025] Admin logged in
+[Wed May 21 22:26:37 2025] Admin logged in
+[Wed May 21 22:26:38 2025] Admin logged out
