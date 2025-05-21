@@ -197,7 +197,8 @@ public:
         cout << "3. View Enrolled Courses\n";
         cout << "4. Edit Profile\n";
         cout << "5. Drop Course\n";
-        cout << "6. Logout\n";
+        cout << "6. Change Display Mode\n";
+        cout << "7. Logout\n";
     }
     bool handleOption(int opt) override;
 };
@@ -688,10 +689,34 @@ void enrollCourse(const string& sid) {
         getline(iss, code, ','); getline(iss, name, ','); getline(iss, units, ',');
         cout << code << " - " << name << " (" << units << " units)\n";
     }
-    cout << "Enter Course Code to enroll: ";
-    string code; getline(cin, code);
-    if (!courseExists(code)) { cout << "Course not found.\n"; return; }
-    if (isEnrolled(sid, code)) { cout << "Already enrolled in this course.\n"; return; }
+    string code;
+    bool valid = false;
+    do {
+        cout << "Enter Course Code to enroll: ";
+        getline(cin, code);
+        if (!courseExistsCI(code)) {
+            cout << "Course not found (not case sensitive). Please try again.\n";
+        } else {
+            // Check if already enrolled (case-insensitive)
+            bool alreadyEnrolled = false;
+            ifstream ein("enrollments.txt");
+            string eline;
+            while (getline(ein, eline)) {
+                istringstream eiss(eline);
+                string eid, ecode;
+                getline(eiss, eid, ','); getline(eiss, ecode, ',');
+                if (equalsIgnoreCase(trim(eid), trim(sid)) && equalsIgnoreCase(trim(ecode), trim(code))) {
+                    alreadyEnrolled = true;
+                    break;
+                }
+            }
+            if (alreadyEnrolled) {
+                cout << "You are already enrolled in this course. Please choose another course.\n";
+            } else {
+                valid = true;
+            }
+        }
+    } while (!valid);
     ofstream fout("enrollments.txt", ios::app);
     fout << sid << "," << code << endl;
     Logger::getInstance()->log("Student " + sid + " enrolled in " + code);
@@ -735,9 +760,37 @@ void editProfile(const string& sid) {
         getline(iss, id, ','); getline(iss, name, ','); getline(iss, email, ',');
         getline(iss, age, ','); getline(iss, program, ','); getline(iss, pwd, ',');
         if (trim(id) == sid) {
-            cout << "Edit Name (" << name << "): "; string n; getline(cin, n); if (!n.empty()) name = n;
-            cout << "Edit Email (" << email << "): "; string e; getline(cin, e); if (!e.empty()) email = e;
-            cout << "Edit Age (" << age << "): "; string a; getline(cin, a); if (!a.empty()) age = a;
+            string n, e, a;
+            // Name validation
+            do {
+                cout << "Edit Name (" << name << "): ";
+                getline(cin, n);
+                if (n.empty()) break;
+                if (!isLettersOnly(n)) {
+                    cout << "Name should be letters only.\n";
+                } else {
+                    name = n;
+                    break;
+                }
+            } while (true);
+
+            cout << "Edit Email (" << email << "): ";
+            getline(cin, e);
+            if (!e.empty()) email = e;
+
+            // Age validation
+            do {
+                cout << "Edit Age (" << age << "): ";
+                getline(cin, a);
+                if (a.empty()) break;
+                if (!isWholeNumber(a)) {
+                    cout << "Age should be a whole number.\n";
+                } else {
+                    age = a;
+                    break;
+                }
+            } while (true);
+
             fout << id << "," << name << "," << email << "," << age << "," << program << "," << pwd << endl;
             edited = true;
         } else {
@@ -752,9 +805,35 @@ void editProfile(const string& sid) {
     }
 }
 void dropCourse(const string& sid) {
-    cout << "Enter Course Code to drop: ";
-    string code; getline(cin, code);
-    if (!isEnrolled(sid, code)) { cout << "Not enrolled in this course.\n"; return; }
+    string code;
+    bool valid = false;
+    do {
+        cout << "Enter Course Code to drop: ";
+        getline(cin, code);
+        if (!courseExistsCI(code)) {
+            cout << "Course not found (not case sensitive). Please try again.\n";
+        } else {
+            // Check if enrolled (case-insensitive)
+            bool enrolled = false;
+            ifstream ein("enrollments.txt");
+            string eline;
+            while (getline(ein, eline)) {
+                istringstream eiss(eline);
+                string eid, ecode;
+                getline(eiss, eid, ','); getline(eiss, ecode, ',');
+                if (equalsIgnoreCase(trim(eid), trim(sid)) && equalsIgnoreCase(trim(ecode), trim(code))) {
+                    enrolled = true;
+                    break;
+                }
+            }
+            if (!enrolled) {
+                cout << "Not enrolled in this course.\n";
+            } else {
+                valid = true;
+            }
+        }
+    } while (!valid);
+
     ifstream fin("enrollments.txt");
     ofstream fout("enrollments_tmp.txt");
     string line;
@@ -763,7 +842,7 @@ void dropCourse(const string& sid) {
         istringstream iss(line);
         string id, ccode;
         getline(iss, id, ','); getline(iss, ccode, ',');
-        if (trim(id) == sid && trim(ccode) == code) {
+        if (equalsIgnoreCase(trim(id), trim(sid)) && equalsIgnoreCase(trim(ccode), trim(code))) {
             dropped = true;
         } else {
             fout << id << "," << ccode << endl;
@@ -790,21 +869,27 @@ bool Admin::handleOption(int opt) {
         case 8: deleteStudent(); break;
         case 9: deleteCourse(); break;
         case 10: chooseDisplayStrategy(); break;
-        case 11: Logger::getInstance()->log(getId() + " logged out"); return false;
-        default: cout << "Invalid option.\n";
+        case 11:
+            Logger::getInstance()->log("Admin logged out");
+            return false;
+        default:
+            cout << "Invalid option.\n";
     }
     return true;
 }
 
 // --- Student Option Handler ---
 bool Student::handleOption(int opt) {
-    if (opt == 1) viewProfile(getId());
-    else if (opt == 2) enrollCourse(getId());
-    else if (opt == 3) viewEnrolledCourses(getId());
-    else if (opt == 4) editProfile(getId());
-    else if (opt == 5) dropCourse(getId());
-    else if (opt == 6) { Logger::getInstance()->log(getId() + " logged out"); return false; }
-    else cout << "Invalid option.\n";
+    switch (opt) {
+        case 1: viewProfile(getId()); break;
+        case 2: enrollCourse(getId()); break;
+        case 3: viewEnrolledCourses(getId()); break;
+        case 4: editProfile(getId()); break;
+        case 5: dropCourse(getId()); break;
+        case 6: chooseDisplayStrategy(); break;
+        case 7: Logger::getInstance()->log(getId() + " logged out"); return false;
+        default: cout << "Invalid option.\n";
+    }
     return true;
 }
 
@@ -858,12 +943,24 @@ int main() {
             getline(cin, optstr);
             int opt = 0;
             bool valid = true;
-            if (optstr.empty()) valid = false;
-            for (size_t i = 0; i < optstr.size(); ++i) {
-                if (!(optstr[i] >= '0' && optstr[i] <= '9')) valid = false;
+
+            // Check if Admin or Student for menu range
+            Admin* adminPtr = dynamic_cast<Admin*>(user.get());
+            int minOpt = 1, maxOpt = adminPtr ? 11 : 7;
+
+            // Only digits, no spaces, and within allowed range
+            if (optstr.empty() || optstr.find_first_not_of("0123456789") != string::npos)
+                valid = false;
+            else {
+                opt = stoi(optstr);
+                if (opt < minOpt || opt > maxOpt) valid = false;
             }
-            if (valid) opt = atoi(optstr.c_str());
-            else opt = 0;
+
+            if (!valid) {
+                cout << "Invalid input. Please enter a number from " << minOpt << " to " << maxOpt << " only.\n";
+                continue;
+            }
+
             running = user->handleOption(opt);
         }
     } catch (const exception& ex) {

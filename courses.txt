@@ -1,1 +1,3 @@
 Inteprog,Intro to Prog,2
+Infoman,Information Management,3
+Itproma,Introduction to Project Management,3

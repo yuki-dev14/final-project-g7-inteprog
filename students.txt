@@ -1,2 +1,5 @@
 
-abc123,Lem Garcia,lemgarcia@gmail.com,22,BS IT,Lemg_123
+abc123,Leemuel Garcia,lemg@gmail.com,20,BS IT,Lemg_123
+DEF456,Euclid Yabut,euclidyabut@gmail.com,20,BS IT,yuki123
+GHI789,Gwy Salazar,gwysalazar@gmail.com,20,BS IT,gwy123
+jas456,Jasmine Bustamante,jasbu@gmail.com,20,BS IT,jas123

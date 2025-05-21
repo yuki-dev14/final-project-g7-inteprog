@@ -1,1 +1,1 @@
-abc123,Inteprog
+abc123,inteprog
