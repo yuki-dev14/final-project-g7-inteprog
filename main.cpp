@@ -812,9 +812,21 @@ bool Student::handleOption(int opt) {
 unique_ptr<User> login() {
     bool loggedIn = false;
     unique_ptr<User> user;
+
     do {
+        // Clear the console screen (Windows-specific)
+        system("cls");
+
+        // Display a styled login header
+        cout << "=========================================\n";
+        cout << "         STUDENT MANAGEMENT SYSTEM       \n";
+        cout << "=========================================\n";
+        cout << "               LOGIN PAGE                \n";
+        cout << "=========================================\n";
+
+        // Prompt for username and password
         string username, password;
-        cout << "Username (admin or student ID): ";
+        cout << "\nUsername (admin or student ID): ";
         getline(cin, username);
         cout << "Password: ";
         getline(cin, password);
@@ -825,6 +837,7 @@ unique_ptr<User> login() {
             user.reset(new Admin("admin", "Administrator", "admin@school.edu", "admin123"));
             loggedIn = true;
         } else {
+            // Check student credentials
             ifstream fin("students.txt");
             string line;
             while (getline(fin, line)) {
@@ -840,8 +853,23 @@ unique_ptr<User> login() {
                 }
             }
         }
-        if (!loggedIn) cout << "Login failed: Invalid credentials. Try again.\n";
+
+        // Handle invalid credentials
+        if (!loggedIn) {
+            cout << "\n=========================================\n";
+            cout << "       Login failed: Invalid credentials.\n";
+            cout << "=========================================\n";
+            cout << "Press Enter to try again...";
+            cin.ignore();
+        }
     } while (!loggedIn);
+
+    // Clear the screen and welcome the user
+    system("cls");
+    cout << "=========================================\n";
+    cout << "         WELCOME TO THE SYSTEM!          \n";
+    cout << "=========================================\n";
+
     return user;
 }
 
