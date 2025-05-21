@@ -204,12 +204,28 @@ bool isEnrolled(const string& sid, const string& ccode) {
         string id, code;
         getline(iss, id, ',');
         getline(iss, code, ',');
-        if (trim(id) == sid && trim(code) == ccode) return true;
+        if (trim(id) == sid && equalsIgnoreCase(trim(code), trim(ccode)))
+            return true;
     }
     return false;
 }
 
 // --- Helpers for validation and case-insensitive checks ---
+bool equalsIgnoreCase(const string& a, const string& b); // Forward declaration
+
+bool isEnrolled(const string& sid, const string& ccode) {
+    ifstream fin("enrollments.txt");
+    string line;
+    while (getline(fin, line)) {
+        istringstream iss(line);
+        string id, code;
+        getline(iss, id, ',');
+        getline(iss, code, ',');
+        if (trim(id) == sid && equalsIgnoreCase(trim(code), trim(ccode)))
+            return true;
+    }
+    return false;
+}
 bool isAlphanumeric(const string& s) {
     if (s.empty()) return false;
     for (size_t i = 0; i < s.size(); ++i) {
@@ -332,10 +348,37 @@ void addStudent() {
 }
 void addCourse() {
     string code, name, units;
-    cout << "Enter Course Code: "; getline(cin, code);
-    if (courseExists(code)) { cout << "Course code already exists.\n"; return; }
-    cout << "Enter Course Name: "; getline(cin, name);
-    cout << "Enter Units: "; getline(cin, units);
+    bool validCode = false;
+    do {
+        cout << "Enter Course Code: ";
+        getline(cin, code);
+        if (code.find(' ') != string::npos) {
+            cout << "Course code must not contain spaces.\n";
+            continue;
+        }
+        if (!isAlphanumeric(code)) {
+            cout << "Course code must be strictly alphanumeric.\n";
+        } else if (courseExistsCI(code)) {
+            cout << "Course code already exists (case-insensitive).\n";
+        } else {
+            validCode = true;
+        }
+    } while (!validCode);
+
+    cout << "Enter Course Name: ";
+    getline(cin, name);
+
+    bool validUnits = false;
+    do {
+        cout << "Enter Units: ";
+        getline(cin, units);
+        if (!isWholeNumber(units)) {
+            cout << "Units should be a whole number.\n";
+        } else {
+            validUnits = true;
+        }
+    } while (!validUnits);
+
     ofstream fout("courses.txt", ios::app);
     fout << code << "," << name << "," << units << endl;
     Logger::getInstance()->log("Admin added course " + code);
@@ -351,30 +394,42 @@ void viewAllCourses() {
 }
 void viewStudentsPerCourse() {
     cout << "Enter Course Code: ";
-    string code; getline(cin, code);
-    if (!courseExists(code)) { cout << "Course not found.\n"; return; }
+    string code;
+    getline(cin, code);
+
+    // Use case-insensitive check
+    if (!courseExistsCI(code)) {
+        cout << "Course not found.\n";
+        return;
+    }
+
     cout << "Students enrolled in " << code << ":\n";
     ifstream fin("enrollments.txt");
     string line;
+    bool found = false;
     while (getline(fin, line)) {
         istringstream iss(line);
         string sid, ccode;
-        getline(iss, sid, ','); getline(iss, code, ',');
-        if (trim(ccode) == code) {
+        getline(iss, sid, ',');
+        getline(iss, ccode, ',');
+        if (equalsIgnoreCase(trim(ccode), trim(code))) {
             // Get student name
             ifstream sfin("students.txt");
             string sline;
             while (getline(sfin, sline)) {
                 istringstream siss(sline);
                 string id, name;
-                getline(siss, id, ','); getline(siss, name, ',');
+                getline(siss, id, ',');
+                getline(siss, name, ',');
                 if (trim(id) == trim(sid)) {
                     cout << id << " - " << name << endl;
+                    found = true;
                     break;
                 }
             }
         }
     }
+    if (!found) cout << "No students enrolled in this course.\n";
 }
 void editStudent() {
     cout << "Enter Student ID to edit: ";
@@ -536,7 +591,7 @@ void enrollCourse(const string& sid) {
     }
     cout << "Enter Course Code to enroll: ";
     string code; getline(cin, code);
-    if (!courseExists(code)) { cout << "Course not found.\n"; return; }
+    if (!courseExistsCI(code)) { cout << "Course not found.\n"; return; }
     if (isEnrolled(sid, code)) { cout << "Already enrolled in this course.\n"; return; }
     ofstream fout("enrollments.txt", ios::app);
     fout << sid << "," << code << endl;
@@ -553,14 +608,14 @@ void viewEnrolledCourses(const string& sid) {
         string id, code;
         getline(iss, id, ','); getline(iss, code, ',');
         if (trim(id) == sid) {
-            // Get course name
+            // Get course name (case-insensitive match)
             ifstream cfin("courses.txt");
             string cline;
             while (getline(cfin, cline)) {
                 istringstream ciss(cline);
                 string ccode, cname, units;
                 getline(ciss, ccode, ','); getline(ciss, cname, ','); getline(ciss, units, ',');
-                if (trim(ccode) == trim(code)) {
+                if (equalsIgnoreCase(trim(ccode), trim(code))) {
                     cout << ccode << " - " << cname << " (" << units << " units)\n";
                     found = true;
                     break;
@@ -600,27 +655,38 @@ void editProfile(const string& sid) {
 void dropCourse(const string& sid) {
     cout << "Enter Course Code to drop: ";
     string code; getline(cin, code);
-    if (!isEnrolled(sid, code)) { cout << "Not enrolled in this course.\n"; return; }
+    // Find the actual enrolled course code (case-insensitive)
+    string enrolledCode;
     ifstream fin("enrollments.txt");
-    ofstream fout("enrollments_tmp.txt");
     string line;
-    bool dropped = false;
+    bool isEnrolledFlag = false;
     while (getline(fin, line)) {
         istringstream iss(line);
         string id, ccode;
         getline(iss, id, ','); getline(iss, ccode, ',');
-        if (trim(id) == sid && trim(ccode) == code) {
-            dropped = true;
-        } else {
+        if (trim(id) == sid && equalsIgnoreCase(trim(ccode), trim(code))) {
+            enrolledCode = ccode;
+            isEnrolledFlag = true;
+            break;
+        }
+    }
+    fin.close();
+    if (!isEnrolledFlag) { cout << "Not enrolled in this course.\n"; return; }
+    // Remove enrollment
+    ifstream fin2("enrollments.txt");
+    ofstream fout("enrollments_tmp.txt");
+    while (getline(fin2, line)) {
+        istringstream iss(line);
+        string id, ccode;
+        getline(iss, id, ','); getline(iss, ccode, ',');
+        if (!(trim(id) == sid && equalsIgnoreCase(trim(ccode), trim(code)))) {
             fout << id << "," << ccode << endl;
         }
     }
-    fin.close(); fout.close();
+    fin2.close(); fout.close();
     remove("enrollments.txt"); rename("enrollments_tmp.txt", "enrollments.txt");
-    if (dropped) {
-        Logger::getInstance()->log("Student " + sid + " dropped course " + code);
-        cout << "Dropped course.\n";
-    }
+    Logger::getInstance()->log("Student " + sid + " dropped course " + enrolledCode);
+    cout << "Dropped course.\n";
 }
 
 // --- Admin Option Handler ---

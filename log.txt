@@ -24,3 +24,5 @@
 [Wed May 21 21:25:07 2025] Admin logged in
 [Wed May 21 21:26:05 2025] Admin added student def456
 [Wed May 21 21:26:31 2025] Admin logged in
+[Wed May 21 21:28:31 2025] Admin logged in
+[Wed May 21 21:29:12 2025] Admin added course Infoman
